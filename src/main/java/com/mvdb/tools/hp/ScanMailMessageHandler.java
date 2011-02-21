@@ -7,15 +7,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.james.mime4j.message.BinaryBody;
 import org.apache.james.mime4j.message.Message;
 import org.apache.james.mime4j.message.Multipart;
-import org.subethamail.smtp.MessageContext;
 import org.subethamail.smtp.MessageHandler;
 import org.subethamail.smtp.RejectException;
 
@@ -25,24 +23,11 @@ import org.subethamail.smtp.RejectException;
  */
 public class ScanMailMessageHandler implements MessageHandler {
 
-    private static final String MAILMAPPINGS = "scanmailmappings.properties";
-    private static final String SMPTRELAY = "smtprelay";
-    
-    MessageContext ctx;
     private String smtpRelay;
-    Map<String, String> mapping; 
+    private Configuration configuration;
 
-    @SuppressWarnings("unchecked")
-    public ScanMailMessageHandler(MessageContext ctx) {
-        this.ctx = ctx;
-        Properties props = new Properties();
-        try {
-            props.load(getClass().getClassLoader().getResourceAsStream(MAILMAPPINGS));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        smtpRelay = (String) props.remove(SMPTRELAY);
-        mapping = new HashMap(props);
+    public ScanMailMessageHandler(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     public void from(String from) throws RejectException {
@@ -57,27 +42,20 @@ public class ScanMailMessageHandler implements MessageHandler {
         if (message.isMultipart()) {
             Multipart mPart = (Multipart) message.getBody();
             BinaryBody bb = (BinaryBody) mPart.getBodyParts().get(0).getBody();
-            String folder = mapping.get(toAddress);
+            String folder = configuration.getString(toAddress, null);
+            System.out.println("configuration : " + ConfigurationUtils.toString(configuration));
             if (folder != null) {
-                createFolder(folder);
-                String newFile = FilenameUtils.concat(folder, System.currentTimeMillis()+".pdf");
+                new File(folder).mkdirs();
+                String newFile = FilenameUtils.concat(folder, System.currentTimeMillis() + ".pdf");
                 System.out.println("Storing file : " + newFile);
                 bb.writeTo(new FileOutputStream(new File(newFile)));
             } else {
-                System.out.println("Mail relay is not yet supported! (current mailrelay setting : "+smtpRelay+")");
+                System.out.println("Mail relay is not yet supported! (current mailrelay setting : " + smtpRelay + ")");
             }
         }
     }
 
     public void done() {
-    }
-    
-    public void setMapping(String mailAddress, String directory) {
-        mapping.put(mailAddress, directory);
-    }
-    
-    private void createFolder(String folder) {
-        new File(folder).mkdirs();
     }
 
 }

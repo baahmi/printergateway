@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.InputStream;
 
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Test;
@@ -25,8 +26,7 @@ public class LaserMailTest {
         File tmpDir = new File("target/tmpfiles/");
         String originalFile = "src/test/resources/laserprintermail.pdf";
         tmpDir.mkdirs();
-        ScanMailMessageHandler handler = new ScanMailMessageHandler(null);
-        handler.setMapping("testmail@home.mvdb.net", "target/tmpfiles/");
+        ScanMailMessageHandler handler = new ScanMailMessageHandler(new PropertiesConfiguration("src/test/resources/testmappings.config"));
         InputStream is = FileUtils.openInputStream(new File("src/test/resources/laserprintermail.example"));
         handler.data(is);
         String[] pdfFiles = tmpDir.list(new SuffixFileFilter(".pdf"));
