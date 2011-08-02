@@ -21,7 +21,8 @@ public class PrinterGateway {
      * @param args
      */
     public static void main(String[] args) {
-        ScanMailHandlerFactory factory = new ScanMailHandlerFactory(processCommandLine(args));
+        String mappings = processCommandLine(args);
+        ScanMailHandlerFactory factory = new ScanMailHandlerFactory(mappings);
         SMTPServer server = new SMTPServer(factory);
         server.setPort(25000);
         server.start();

@@ -48,7 +48,9 @@ public class ScanMailMessageHandler implements MessageHandler {
                 new File(folder).mkdirs();
                 String newFile = FilenameUtils.concat(folder, System.currentTimeMillis() + ".pdf");
                 System.out.println("Storing file : " + newFile);
-                bb.writeTo(new FileOutputStream(new File(newFile)));
+                FileOutputStream fo = new FileOutputStream(new File(newFile));
+                bb.writeTo(fo);
+                fo.close();
             } else {
                 System.out.println("Mail relay is not yet supported! (current mailrelay setting : " + smtpRelay + ")");
             }
