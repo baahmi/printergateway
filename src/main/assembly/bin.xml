@@ -20,6 +20,11 @@
       <outputDirectory>conf</outputDirectory>
       <destName>scan.properties</destName>
     </file>
+    <file>
+      <source>src/main/resources/printergateway-62243e827a4a.p12</source>
+      <outputDirectory>conf</outputDirectory>
+      <destName>printergateway-62243e827a4a.p12</destName>
+    </file>
   </files>
 </assembly>
 

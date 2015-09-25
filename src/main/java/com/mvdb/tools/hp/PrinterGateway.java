@@ -29,8 +29,10 @@ public class PrinterGateway {
     }
 
     private static String processCommandLine(String[] args) {
-        Options options = new Options().addOption("mapping", true, "Property file containing mail mappings to directories")
-                .addOption("help", false, "Help");
+        Options options = new Options().
+                addOption("mapping", true, "Property file containing mail mappings to directories").
+                addOption("key", true, "The gooledrive keyfile").
+                addOption("help", false, "Help");
         CommandLineParser parser = new PosixParser();
         try {
             CommandLine line = parser.parse(options, args);
