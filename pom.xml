@@ -25,7 +25,7 @@
           <daemons>
             <daemon>
               <id>PrinterGateway</id>
-              <mainClass>com.mvdb.tools.hp.PrinterGateway</mainClass>
+              <mainClass>com.mvdb.tools.printergateway.PrinterGateway</mainClass>
               <commandLineArguments>
                 <commandLineArgument>-mapping conf/scan.properties</commandLineArgument>
                 <commandLineArgument>-key conf/printergateway-62243e827a4a.p12</commandLineArgument>

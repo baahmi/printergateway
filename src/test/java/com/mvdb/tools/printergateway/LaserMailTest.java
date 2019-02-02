@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package com.mvdb.tools.hp;
+package com.mvdb.tools.printergateway;
 
 import static org.junit.Assert.assertEquals;
 
@@ -24,8 +24,6 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Test;
-
-import com.mvdb.tools.hp.ScanMailMessageHandler;
 
 /**
  * @author <a href="mailto:martin@mvdb.net">Martin van den Bemt</a>
