@@ -1,101 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Copyright 2019 Martin van den Bemt
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
 <project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mvdb.tools</groupId>
-  <artifactId>printergetawy</artifactId>
+  <artifactId>printergateway</artifactId>
   <version>1.0-SNAPSHOT</version>
   <description>Printergateway Tool</description>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
-
   <build>
+    <!-- To define the plugin version in your parent POM -->
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <version>0.13</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <!-- To use the plugin goals in your POM or parent POM -->
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>appassembler-maven-plugin</artifactId>
-        <version>1.1.1</version>
-        <configuration>
-          <repositoryName>lib</repositoryName>
-          <repoPath>lib</repoPath>
-          <repositoryLayout>flat</repositoryLayout>
-          <!--  voor generate daemons -->
-          <target>${project.build.directory}/appassembler</target>
-          <daemons>
-            <daemon>
-              <id>PrinterGateway</id>
-              <mainClass>org.mvdb.tools.printergateway.PrinterGateway</mainClass>
-              <commandLineArguments>
-                <commandLineArgument>-mapping conf/scan.properties</commandLineArgument>
-                <commandLineArgument>-key conf/printergateway-62243e827a4a.p12</commandLineArgument>
-              </commandLineArguments>
-              <platforms>
-                <platform>jsw</platform>
-              </platforms>
-              <jvmSettings>
-                <extraArguments>
-                  <extraArgument>-Dorg.apache.james.mime4j.defaultStorageProvider=org.apache.james.mime4j.storage.MemoryStorageProvider</extraArgument>
-                </extraArguments>
-              </jvmSettings>
-              <generatorConfigurations>
-                <generatorConfiguration>
-                  <generator>jsw</generator>
-                  <includes>
-                    <include>linux-x86-32</include>
-                    <include>linux-x86-64</include>
-                    <include>windows-x86-32</include>
-                  </includes>
-                  <configuration>
-                    <property>
-                      <name>set.default.REPO_DIR</name>
-                      <value>lib</value>
-                    </property>
-                    <property>
-                      <name>wrapper.syslog.loglevel</name>
-                      <value>ERROR</value>
-                    </property>
-                    <property>
-                      <name>wrapper.logfile.loglevel</name>
-                      <value>ERROR</value>
-                    </property>
-                  </configuration>
-                </generatorConfiguration>
-              </generatorConfigurations>
-            </daemon>
-          </daemons>
-        </configuration>
-        <executions>
-          <execution>
-            <id>generate-jsw-scripts</id>
-            <phase>package</phase>
-            <goals>
-              <goal>generate-daemons</goal>
-              <goal>create-repository</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>      
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <finalName>PrinterGateway</finalName>
-          <descriptors>
-            <descriptor>src/main/assembly/bin.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <id>assemble</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>       
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <version>0.13</version>
+      </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>docker</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.google.cloud.tools</groupId>
+            <artifactId>jib-maven-plugin</artifactId>
+            <version>1.0.2</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>dockerBuild</goal>
+                </goals>
+                <phase>package</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <allowInsecureRegistries>true</allowInsecureRegistries>
+              <!--
+              Useful if you need debugging.
+              <from>
+                <image>gcr.io/distroless/java:debug</image>
+              </from>
+              -->
+              <to>
+                <image>printergateway</image>
+              </to>
+              <container>
+                <useCurrentTimestamp>true</useCurrentTimestamp>
+                <jvmFlags>
+                  <jvmFlag>-Djava.util.logging.config.file=/conf/logging.properties</jvmFlag>
+                </jvmFlags>
+              </container>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -135,9 +126,14 @@
       <version>2.6</version>
     </dependency>
     <dependency>
-      <groupId>commons-configuration</groupId>
-      <artifactId>commons-configuration</artifactId>
-      <version>1.10</version>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-configuration2</artifactId>
+      <version>2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>1.9.3</version>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>
@@ -154,12 +150,24 @@
       <artifactId>google-api-services-drive</artifactId>
       <version>v3-rev20181213-1.28.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.mvdb.beanunit</groupId>
+      <artifactId>beanunit</artifactId>
+      <version>1.0-alpha-11</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>2.24.5</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
-  <!--<repositories>-->
-    <!--<repository>-->
-      <!--<id>mvdb.com</id>-->
-      <!--<name>mvdb.com</name>-->
-      <!--<url>http://maven.home.mvdb.net/maven2/</url>-->
-    <!--</repository>-->
-  <!--</repositories>-->
+  <repositories>
+    <repository>
+      <id>mvdb.com</id>
+      <name>mvdb.com</name>
+      <url>https://www.mvdb.org/dist/maven2</url>
+    </repository>
+  </repositories>
 </project>

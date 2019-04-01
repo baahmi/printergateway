@@ -17,31 +17,37 @@ package org.mvdb.tools.printergateway;
 
 import org.apache.commons.configuration2.Configuration;
 
-import java.io.InputStream;
-
 /**
  * @author <a href="mailto:martin@mvdb.net">Martin van den Bemt</a>
- *
  */
-public interface PGHandler {
+public abstract class AbstractPGHandler implements PGHandler {
 
-    void handle(String target, InputStream scan);
+    protected Configuration configuration;
+    protected String prefix;
 
-    void setConfiguration(Configuration configuration);
+    @Override
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
+    }
 
-    Configuration getConfiguration();
+    @Override
+    public Configuration getConfiguration() {
+        return this.configuration;
+    }
 
-    /**
-     * The prefix is needed to read the correct configuration section,
-     * since the naming is based on the configuration, we cannot
-     * hardcode it.
-     */
-    String getPrefix();
+    @Override
+    public String getPrefix() {
+        return prefix;
+    }
 
-    void setPrefix(String prefix);
+    @Override
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
 
-    String getLocalConfigItem(String key);
-
-
+    @Override
+    public String getLocalConfigItem(String key) {
+        return configuration.getString(String.format("%s/%s",getPrefix(), key));
+    }
 
 }

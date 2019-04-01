@@ -13,35 +13,23 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package org.mvdb.tools.printergateway;
+package org.mvdb.tools.printergateway.handlers;
 
-import org.apache.commons.configuration2.Configuration;
+import org.mvdb.tools.printergateway.AbstractPGHandler;
 
 import java.io.InputStream;
 
 /**
  * @author <a href="mailto:martin@mvdb.net">Martin van den Bemt</a>
- *
  */
-public interface PGHandler {
+public class MockHandler extends AbstractPGHandler {
+    private String target;
+    @Override
+    public void handle(String target, InputStream scan) {
+        this.target = target;
+    }
 
-    void handle(String target, InputStream scan);
-
-    void setConfiguration(Configuration configuration);
-
-    Configuration getConfiguration();
-
-    /**
-     * The prefix is needed to read the correct configuration section,
-     * since the naming is based on the configuration, we cannot
-     * hardcode it.
-     */
-    String getPrefix();
-
-    void setPrefix(String prefix);
-
-    String getLocalConfigItem(String key);
-
-
-
+    public String getTarget() {
+        return target;
+    }
 }

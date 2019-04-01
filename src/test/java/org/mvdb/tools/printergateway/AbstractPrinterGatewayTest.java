@@ -17,31 +17,13 @@ package org.mvdb.tools.printergateway;
 
 import org.apache.commons.configuration2.Configuration;
 
-import java.io.InputStream;
-
 /**
  * @author <a href="mailto:martin@mvdb.net">Martin van den Bemt</a>
- *
  */
-public interface PGHandler {
+public class AbstractPrinterGatewayTest {
 
-    void handle(String target, InputStream scan);
-
-    void setConfiguration(Configuration configuration);
-
-    Configuration getConfiguration();
-
-    /**
-     * The prefix is needed to read the correct configuration section,
-     * since the naming is based on the configuration, we cannot
-     * hardcode it.
-     */
-    String getPrefix();
-
-    void setPrefix(String prefix);
-
-    String getLocalConfigItem(String key);
-
-
+    public Configuration createConfiguration() {
+        return PrinterGateway.createConfiguration("src/test/resources/printergateway-test.conf");
+    }
 
 }

@@ -13,30 +13,41 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-package org.mvdb.tools.printergateway;
+package org.mvdb.tools.printergateway.handlers;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.time.Instant;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.mvdb.tools.printergateway.AbstractPGHandler;
 
 /**
- * @author mvdb
+ * Save the inputstream to a file with the timestamp as the filename
+ * @author <a href="mailto:martin@mvdb.net">Martin van den Bemt</a>
  */
-public class FileSystemHandler implements PGHandler {
+public class FileSystemHandler extends AbstractPGHandler {
+
+    private static Logger logger = Logger.getLogger("org.mvdb.tools.printergateway");
+
+    public FileSystemHandler() {
+    }
 
     public void handle(String target, InputStream scan) {
-        new File(target).mkdirs();
-        String newFile = FilenameUtils.concat(target, System.currentTimeMillis() + ".pdf");
-        System.out.println("Storing file : " + newFile);
-        try {
-            FileOutputStream fo = new FileOutputStream(new File(newFile));
+        File targetFile = new File(target, createFileName());
+        targetFile.getParentFile().mkdirs();
+        logger.info("Storing scan to  : " + targetFile);
+        try (FileOutputStream fo = new FileOutputStream(targetFile)) {
             IOUtils.copy(scan, fo);
-            fo.close();
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+
+    protected String createFileName() {
+        return Instant.now().toEpochMilli() + ".pdf";
     }
 }

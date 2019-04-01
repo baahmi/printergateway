@@ -15,36 +15,92 @@
 */
 package org.mvdb.tools.printergateway;
 
+import javafx.print.Printer;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.INIConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.configuration2.io.BasePathLocationStrategy;
+import org.apache.commons.configuration2.tree.DefaultExpressionEngine;
+import org.apache.commons.configuration2.tree.DefaultExpressionEngineSymbols;
 import org.subethamail.smtp.server.SMTPServer;
+
+import java.io.File;
+import java.io.StringWriter;
+import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:martin@mvdb.net">Martin van den Bemt</a>
- * 
  */
 public class PrinterGateway {
 
+    private static int DEFAULT_PORT = 25000;
+
+    private static Logger logger = Logger.getLogger("org.mvdb.tools.printergateway");
+
+    private static String[] args;
     /**
      * @param args
      */
     public static void main(String[] args) {
-        String mappings = processCommandLine(args);
-        ScanMailHandlerFactory factory = new ScanMailHandlerFactory(mappings);
+        PrinterGateway.args = args;
+        new PrinterGateway().start();
+    }
+
+    public static Configuration createConfiguration(String configPath) {
+        File file = new File(configPath);
+        Configuration configuration = null;
+        try {
+            Parameters params = new Parameters();
+            // we have dots in our keys/properties, so the delim is /
+            // inspired from https://commons.apache.org/proper/commons-configuration/userguide/howto_combinedbuilder.html
+            DefaultExpressionEngineSymbols symbols = new DefaultExpressionEngineSymbols.Builder(
+                    DefaultExpressionEngineSymbols.DEFAULT_SYMBOLS)
+                    .setPropertyDelimiter("/").create();
+            DefaultExpressionEngine engine = new DefaultExpressionEngine(symbols);
+            FileBasedConfigurationBuilder<FileBasedConfiguration> builder = new FileBasedConfigurationBuilder<>(INIConfiguration.class);
+            builder.configure(params.ini().setExpressionEngine(engine).setLocationStrategy(new BasePathLocationStrategy()).
+                    setBasePath(file.getParentFile().getAbsolutePath()).setFileName(file.getName()));
+            configuration = builder.getConfiguration();
+            try {
+                StringWriter configRead = new StringWriter();
+                ((INIConfiguration) configuration).write(configRead);
+                logger.finest("Config that was read :");
+                logger.finest(configRead.toString());
+            } catch(Exception e) {
+            }
+        } catch(ConfigurationException ce) {
+            throw new RuntimeException("Configuration file "+configPath+" not found", ce);
+        }
+        return configuration;
+    }
+
+    public PrinterGateway() {
+    }
+
+    public void start() {
+        String configPath = processCommandLine(PrinterGateway.args);
+        Configuration configuration = PrinterGateway.createConfiguration(configPath);
+        ScanMailHandlerFactory factory = new ScanMailHandlerFactory(configuration);
         SMTPServer server = new SMTPServer(factory);
-        server.setPort(25000);
+        server.setPort(configuration.getInt("general/port", DEFAULT_PORT));
         server.start();
     }
 
-    private static String processCommandLine(String[] args) {
-        Options options = new Options().
-                addOption("mapping", true, "Property file containing mail mappings to directories").
-                addOption("key", true, "The googledrive keyfile").
-                addOption("help", false, "Help");
+    private String processCommandLine(String[] args) {
+        Options options = new Options().addOption("h", "help", false, "Help").addOption(
+            Option.builder().longOpt("config").argName("config").hasArg().desc("Gateway configuration file").build()
+        );
+
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine line = parser.parse(options, args);
@@ -52,7 +108,7 @@ public class PrinterGateway {
                 showHelp(options);
                 System.exit(0);
             }
-            return line.getOptionValue("mapping");
+            return line.getOptionValue("config", "/conf/printergateway.conf").trim();
         } catch (ParseException e) {
             e.printStackTrace();
         }
