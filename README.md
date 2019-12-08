@@ -14,8 +14,15 @@
    limitations under the License.
 --->
 
+
 # Printergateway #
 
+This codebase is old and had some renewal to make it work with my new needs. The only thing working for sure is the Google Drive 
+integration and probably the file one. The mail one is probably not working. 
+After cleaning up some Gsuites accounts my gateway stopped working and the problems started with creating a new key. 
+I logged here what I did to get it working again. I haven't tested the dependency changes in docker, so your milage may vary.
+
+Reasonable pull requests are welcome (first discuss things like refactoring, etc).
 
 The printergateway serves as a gateway for my printer to send scans to the location I really need. My printer
 (and old HP Color LaserJet CM2320nf MFP) only has the option to send my scans in a mail 
