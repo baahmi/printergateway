@@ -22,15 +22,23 @@ The printergateway serves as a gateway for my printer to send scans to the locat
 (or scan it with a client that I don't user / have). So I wrote a gateway that is able to write the scans to a 
 different location by using a mail server that dispatches it to the right place based on configuration.
 
-## Build ##
+## Build docker image ##
 
-There are 2 builds for this project : docker image and a tar.gz and zip for ane you can start on the commandline and
-as (service) daemon through the Java Service Wrapper (an old version).
+Even though the maven image build is in a profile, it is activated by default. The initial idea was to
+provide more installer types, but since I have no use for it atm I let that idea go.
 
-## image ##
+So just run :
+
+```
+mvn clean package
+```
+
+which installs the image locally.
+
+#### Copying image to a docker registry ####
 
 If you have build the image, you can use it locally or deploy to a repository.
-An exmple of a private registry, follow these steps :
+An example of a private registry, follow these steps :
 
 Assume your private registry is at 192.168.1.122:5000/printergateway
 
@@ -39,16 +47,15 @@ Assume your private registry is at 192.168.1.122:5000/printergateway
 * docker tag <image id> 192.168.1.122:5000/printergateway 
 * docker push 192.168.1.122:5000/printergateway
 
-Some links for the maven jib plugin :
 
-* https://github.com/GoogleContainerTools/jib/tree/master/jib-maven-plugin#quickstart
-* https://github.com/GoogleContainerTools/jib/blob/master/docs/faq.md#how-do-i-set-parameters-for-my-image-at-runtime
-
+## configuration ##
+In the example directory are a sample loogging.properties and printergateway.conf configuration.
 
 
 ## Starting ##
 
-Defaults :
+When starting the container there are some defaults, if you do not provide one on the commandline  :
+
 * The logging configuration will be read from /conf/logging.properties
 * The configuration will be read from /conf/printergateway.conf
 
@@ -69,14 +76,52 @@ docker run -it -e "JAVA_TOOL_OPTIONS=-Djava.util.logging.config.file=/conf/loggi
 
 Please refer to the details in the previous section
 
+Prefix the printergateway with your private docker registry. 
+So eg if your local registry is at 192.168.1.122:5000 use 192.168.1.122:5000/printergateway to use the image
+
 ```
 docker run -d -v `pwd`/conf:/conf -v `pwd`/secrets:/secrets -p 25000:25000 --restart=always --name printergateway printergateway -config /conf/printergateway.conf
 ```
 
+#### watch logging ####
+Assuming the name was printergateway
+```
+docker logs -f printergateway
+````
 
+### Maven jib plugin ###
+Some links for the maven jib plugin :
+
+* https://github.com/GoogleContainerTools/jib/tree/master/jib-maven-plugin#quickstart
+* https://github.com/GoogleContainerTools/jib/blob/master/docs/faq.md#how-do-i-set-parameters-for-my-image-at-runtime
 
 ### Google Drive Integration ###
 
+#### Give access to the application ####
+
+I use GSuite, so maybe things are different if you just use gmail.
+Authorisation is a PITA if you use documentation. 
+
+ * Go to https://console.developers.google.com/apis/credentials
+ * Choose from Create credentials the Service Account Key
+ * Select New service account from Service Account dropdown
+ * Create and select Create Without Role.
+ * Download for p12 file pops up save this key to a place, so it can be found by the Printergateway.
+ * Go to IAM & Admin > Service accounts
+ * Use the Email of that serviecacount in the account-user and account-id configuraation item (you need this address later)
+ * Go to the menu image on the left (the 3 lines) and select API & Services Library.
+ * Click on Google Drive API under G Suite and enable it.
+ * Go to the Admin Console of your G Suite App (it should be a Google Admin titles screen)
+ * Go to security and click on API reference
+ * Go to security and go to Advanced Settings and open it
+ * Click on Manage API client access
+ * Paste the mail address from account-user or account-id (they are the same) in the Client Name field (you can also paste the service account mail address)
+ * In One or More API Scopes add https://www.googleapis.com/auth/drive and click Authorize
+ * Make sure the whole path to the folder the upload is in, is accessible by the account, so you should give the account mail address access.
+ * If you think that is too much rights, just add a new structure from the root of your drive and add rights there
+ * You can symlink that folder in another folder, by selecting that folder, hit shift-z and "move" it to another place.
+ * You should see it in the new folder and Details of the folder should mention 2 locations.
+ 
 
 #### Create a test private key for the unit tests ####
 

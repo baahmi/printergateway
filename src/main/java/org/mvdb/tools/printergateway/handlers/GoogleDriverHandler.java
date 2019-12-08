@@ -43,9 +43,9 @@ public class GoogleDriverHandler extends AbstractPGHandler {
     private static Logger logger = Logger.getLogger("org.mvdb.tools.printergateway");
 
     private static final String APPNAME = "Printergateway";
-    private static final String ACCOUNT_USER_KEY = "account-user";
-    private static final String ACCOUNT_ID_KEY = "account-id";
-    private static final String ACCOUNT_PRIVATE_KEY_KEY =  "account-privatekey-p12-file";
+    static final String ACCOUNT_USER_KEY = "account-user";
+    static final String ACCOUNT_ID_KEY = "account-id";
+    static final String ACCOUNT_PRIVATE_KEY_KEY =  "account-privatekey-p12-file";
 
     /**
      *

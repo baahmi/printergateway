@@ -15,7 +15,6 @@
 */
 package org.mvdb.tools.printergateway;
 
-import javafx.print.Printer;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;

@@ -140,16 +140,22 @@
       <artifactId>commons-cli</artifactId>
       <version>1.4</version>
     </dependency>
-    <dependency>
-      <groupId>com.google.api-client</groupId>
-      <artifactId>google-api-client</artifactId>
-      <version>1.28.0</version>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>com.google.api-client</groupId>-->
+<!--      <artifactId>google-api-client</artifactId>-->
+<!--      <version>1.28.0</version>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>com.google.apis</groupId>
       <artifactId>google-api-services-drive</artifactId>
-      <version>v3-rev20181213-1.28.0</version>
+      <version>v3-rev20191108-1.30.3</version>
     </dependency>
+
+    <!--    <dependency>-->
+<!--      <groupId>com.google.apis</groupId>-->
+<!--      <artifactId>google-api-services-drive</artifactId>-->
+<!--      <version>v3-rev20181213-1.28.0</version>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>org.mvdb.beanunit</groupId>
       <artifactId>beanunit</artifactId>

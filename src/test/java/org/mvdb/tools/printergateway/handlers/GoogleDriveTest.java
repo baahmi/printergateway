@@ -15,21 +15,31 @@
 */
 package org.mvdb.tools.printergateway.handlers;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.LowLevelHttpRequest;
 import com.google.api.client.http.LowLevelHttpResponse;
 import com.google.api.client.json.Json;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.testing.http.MockHttpTransport;
 import com.google.api.client.testing.http.MockLowLevelHttpRequest;
 import com.google.api.client.testing.http.MockLowLevelHttpResponse;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Test;
 import org.mvdb.tools.printergateway.AbstractPrinterGatewayTest;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -121,6 +131,43 @@ public class GoogleDriveTest extends AbstractPrinterGatewayTest {
         result.put("https://www.googleapis.com/drive/v3/files?q=name%3D'dontexist'", "{'kind': 'drive#fileList','files': []}");
         result.replaceAll((k,v) -> v.replaceAll("'", "\""));
         return result;
+    }
+
+
+    public static void main(String[] args) {
+        String accountUser = "service account mail";
+        String accountId = "service account mail";
+        String accountPKFile = "location/to/p12/file";
+        String testFileToUpload = "";
+        String pathToUseForUpload = "";
+
+        // API KEY : AIzaSyD1eT-1oSAwbdLhScsa0ASS9ZUA7fD61bg
+        GoogleDriverHandler gdh = new GoogleDriverHandler() {
+            @Override
+            public String getLocalConfigItem(String key) {
+                if(key.equals(GoogleDriverHandler.ACCOUNT_USER_KEY)) {
+                    return accountUser;
+                } else if(key.equals(GoogleDriverHandler.ACCOUNT_ID_KEY)) {
+                    return accountId;
+                } else if (key.equals(GoogleDriverHandler.ACCOUNT_PRIVATE_KEY_KEY)) {
+                    return accountPKFile;
+                }
+                return super.getLocalConfigItem(key);
+            }
+        };
+        // directory listing
+        Drive drive = gdh.createDrive();
+        try {
+            System.out.println(drive.files().list());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // upload of file. Tends to succeed even if nothings happens
+        try {
+            gdh.handle(pathToUseForUpload, new FileInputStream(new java.io.File(testFileToUpload)));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 }
