@@ -141,7 +141,6 @@ public class GoogleDriveTest extends AbstractPrinterGatewayTest {
         String testFileToUpload = "";
         String pathToUseForUpload = "";
 
-        // API KEY : AIzaSyD1eT-1oSAwbdLhScsa0ASS9ZUA7fD61bg
         GoogleDriverHandler gdh = new GoogleDriverHandler() {
             @Override
             public String getLocalConfigItem(String key) {
