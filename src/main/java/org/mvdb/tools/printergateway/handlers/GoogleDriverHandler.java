@@ -165,4 +165,10 @@ public class GoogleDriverHandler extends AbstractPGHandler {
     HttpTransport createTransport() throws GeneralSecurityException, IOException {
         return GoogleNetHttpTransport.newTrustedTransport();
     }
+
+    @Override
+    public boolean isSlow() {
+        return true;
+    }
+
 }

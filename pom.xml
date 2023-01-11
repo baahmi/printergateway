@@ -18,14 +18,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mvdb.tools</groupId>
   <artifactId>printergateway</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.1-SNAPSHOT</version>
   <description>Printergateway Tool</description>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
   <build>
-    <!-- To define the plugin version in your parent POM -->
     <pluginManagement>
       <plugins>
         <plugin>
@@ -35,7 +34,6 @@
         </plugin>
       </plugins>
     </pluginManagement>
-    <!-- To use the plugin goals in your POM or parent POM -->
     <plugins>
       <plugin>
         <groupId>org.apache.rat</groupId>
@@ -55,7 +53,7 @@
           <plugin>
             <groupId>com.google.cloud.tools</groupId>
             <artifactId>jib-maven-plugin</artifactId>
-            <version>1.0.2</version>
+            <version>3.3.1</version>
             <executions>
               <execution>
                 <goals>
@@ -76,7 +74,7 @@
                 <image>printergateway</image>
               </to>
               <container>
-                <useCurrentTimestamp>true</useCurrentTimestamp>
+                <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                 <jvmFlags>
                   <jvmFlag>-Djava.util.logging.config.file=/conf/logging.properties</jvmFlag>
                 </jvmFlags>
@@ -140,22 +138,11 @@
       <artifactId>commons-cli</artifactId>
       <version>1.4</version>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>com.google.api-client</groupId>-->
-<!--      <artifactId>google-api-client</artifactId>-->
-<!--      <version>1.28.0</version>-->
-<!--    </dependency>-->
     <dependency>
       <groupId>com.google.apis</groupId>
       <artifactId>google-api-services-drive</artifactId>
       <version>v3-rev20191108-1.30.3</version>
     </dependency>
-
-    <!--    <dependency>-->
-<!--      <groupId>com.google.apis</groupId>-->
-<!--      <artifactId>google-api-services-drive</artifactId>-->
-<!--      <version>v3-rev20181213-1.28.0</version>-->
-<!--    </dependency>-->
     <dependency>
       <groupId>org.mvdb.beanunit</groupId>
       <artifactId>beanunit</artifactId>

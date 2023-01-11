@@ -42,6 +42,11 @@ public interface PGHandler {
 
     String getLocalConfigItem(String key);
 
-
+    /**
+     * Specifies if the handler is slow, so it will be handled in a seperate thread and gives control back
+     * to the printer faster.
+     * @return
+     */
+    boolean isSlow();
 
 }

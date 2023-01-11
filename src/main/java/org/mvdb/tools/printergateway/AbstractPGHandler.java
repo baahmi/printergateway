@@ -50,4 +50,8 @@ public abstract class AbstractPGHandler implements PGHandler {
         return configuration.getString(String.format("%s/%s",getPrefix(), key));
     }
 
+    @Override
+    public boolean isSlow() {
+        return false;
+    }
 }

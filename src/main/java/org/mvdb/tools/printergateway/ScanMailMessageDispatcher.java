@@ -63,7 +63,17 @@ public class ScanMailMessageDispatcher implements MessageHandler {
             String handlerName = handlerTarget.length == 1 ? configuration.getString("general/default") : handlerTarget[0];
             String target = handlerTarget[handlerTarget.length -1];
             PGHandler handler = getHandler(handlerName);
-            handler.handle(target, bb.getInputStream());
+            if(handler.isSlow()) {
+                new Thread(() -> {
+                    try {
+                        handler.handle(target, bb.getInputStream());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).start();
+            } else {
+                handler.handle(target, bb.getInputStream());
+            }
         }
     }
 

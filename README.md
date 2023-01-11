@@ -18,9 +18,9 @@
 # Printergateway #
 
 This codebase is old and had some renewal to make it work with my new needs. The only thing working for sure is the Google Drive 
-integration and probably the file one. The mail one is probably not working. 
-After cleaning up some Gsuites accounts my gateway stopped working and the problems started with creating a new key. 
-I logged here what I did to get it working again. I haven't tested the dependency changes in docker, so your milage may vary.
+integration and probably the file one. The mail one is probably not working.
+After cleaning up some GSuites accounts my gateway stopped working and the problems started with creating a new key. 
+I logged here what I did to get it working again. I haven't tested the dependency changes in docker, so your mileage may vary.
 
 Reasonable pull requests are welcome (first discuss things like refactoring, etc).
 
@@ -68,12 +68,12 @@ When starting the container there are some defaults, if you do not provide one o
 
 #### start as application ####
 
-Minimal start (when you seperate secrets and config (assuming pwd is the "root" directory of those directories)) :
+Minimal start (when you separate secrets and config (assuming pwd is the "root" directory of those directories)) :
 ```
 docker run -it -v `pwd`/conf:/conf -v `pwd`/secrets:/secrets -p 25000:25000 --rm printergateway -config /conf/printergateway.conf
 ```
 
-Overriding all defaults on the commandline (mimicing the defaults) :
+Overriding all defaults on the commandline (mimicking the defaults) :
 
 ```
 docker run -it -e "JAVA_TOOL_OPTIONS=-Djava.util.logging.config.file=/conf/logging.properties" -v `pwd`/tmp/conf:/conf -v `pwd`/tmp/secrets:/secrets -p 25000:25000 --rm printergateway -config /conf/printergateway.conf
@@ -110,13 +110,14 @@ I use GSuite, so maybe things are different if you just use gmail.
 Authorisation is a PITA if you use documentation. 
 
  * Go to https://console.developers.google.com/apis/credentials
+ * Select the right project (you probably need the gsuite one)
  * Choose from Create credentials the Service Account Key
  * Select New service account from Service Account dropdown
  * Create and select Create Without Role.
  * Download for p12 file pops up save this key to a place, so it can be found by the Printergateway.
  * Go to IAM & Admin > Service accounts
- * Use the Email of that serviecacount in the account-user and account-id configuraation item (you need this address later)
- * Go to the menu image on the left (the 3 lines) and select API & Services Library.
+ * Use the Email of that serviceaccount in the account-user and account-id configuraation item (you need this address later)
+ * Go to the menu image on the left (the 3 lines) and select API & Services  -> Library.
  * Click on Google Drive API under G Suite and enable it.
  * Go to the Admin Console of your G Suite App (it should be a Google Admin titles screen)
  * Go to security and click on API reference
@@ -135,7 +136,7 @@ Authorisation is a PITA if you use documentation.
 To be able to test the google drive integration, we need a test private key, to prevent using a real one. 
 The test private key can be found in the src/test/resources directory. 
 
-The googldrive api reads the p12 with the following characteristics :
+The googledrive api reads the p12 with the following characteristics :
  * keystore password must be _**notascret**_
  * private key password must be _**notascret**_
  * the private key must be present under alias _**privatekey**_
